@@ -37,6 +37,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Rigidbody2D myRigidbody;
     [SerializeField] private Animator myAnimator;
     [SerializeField] private BoxCollider2D myCollider;
+    [Space]
+    [SerializeField] private ParticleSystem LandingParticles;
+    [SerializeField] private ParticleSystem FootstepParticles;
+
     [SerializeField] private ParticleSystem BloodParticles;
 
     // Vectors for collision detection
@@ -50,7 +54,6 @@ public class PlayerController : MonoBehaviour
     private bool GroundedLastFrame = false;
     private bool JumpRequest = false;
     private bool JumpBufferUsed = false;
-
     private float HorizontalMovement = 0;
 
     // Timers to handle jumping
@@ -58,7 +61,11 @@ public class PlayerController : MonoBehaviour
     private float JumpBufferCounter;
     private float JumpCooldownCounter;
 
+    // Amim
     private float IdleCounter;
+
+    // Particles
+    private ParticleSystem.EmissionModule DustEmissionModule;
 
 
     private void Awake()
@@ -68,6 +75,8 @@ public class PlayerController : MonoBehaviour
 
         CollisionSizeJump = new Vector2(myCollider.size.x - m_groundDetectionPadding, m_groundDetectionPadding);
         CollisionsSizeWall = new Vector2(m_wallDetectionPadding, myCollider.size.y - m_wallDetectionPadding);
+
+        DustEmissionModule = FootstepParticles.emission;
     }
 
     private void Update()
@@ -106,6 +115,7 @@ public class PlayerController : MonoBehaviour
         {
             direction = Vector2.left;
         }
+        
 
         if (direction != Vector2.zero)
         {
@@ -121,15 +131,26 @@ public class PlayerController : MonoBehaviour
                 myRigidbody.velocity = playerVelocity;
 
                 myAnimator.SetBool("IsRunning", true);
+
+                if (Grounded)
+                {
+                    DustEmissionModule.rateOverTime = 35;
+                }
+                else
+                {
+                    DustEmissionModule.rateOverTime = 0;
+                }
             }
             else
             {
                 myAnimator.SetBool("IsRunning", false);
+                DustEmissionModule.rateOverTime = 0;
             }
         }
         else
         {
             myAnimator.SetBool("IsRunning", false);
+            DustEmissionModule.rateOverTime = 0;
         }
     }
 
@@ -160,7 +181,7 @@ public class PlayerController : MonoBehaviour
             if (JumpBufferUsed)
             {
                 myAnimator.SetTrigger("IsLanding");
-                Debug.LogError("Buffer Used");
+                LandingParticles.Play();
             }
 
             myRigidbody.AddForce(new Vector2(myRigidbody.velocity.x, m_jumpForce), ForceMode2D.Impulse);
@@ -178,6 +199,7 @@ public class PlayerController : MonoBehaviour
         if (Grounded && !GroundedLastFrame)
         {
             myAnimator.SetTrigger("IsLanding");
+            LandingParticles.Play();
         }
 
         // less floaty jump
