@@ -217,13 +217,13 @@ public class PlayerController : MonoBehaviour
              LandingParticles.Play();
         }
 
-        if (myRigidbody.velocity.y < 0)
+        if (myRigidbody.velocity.y < 0.0001f)
         {
             myRigidbody.gravityScale = m_fallMultiplier;
         }
         else if (myRigidbody.velocity.y > 0f)
         {
-            if (CurrentExtraJumpTime > 0)
+            if (CurrentExtraJumpTime > 0.0001f)
             {
                 myRigidbody.gravityScale = m_highJumpMultiplier;
             }
