@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     [Header("Player Settings")]
     [SerializeField] private float m_speed = 10f;
     [SerializeField] private float m_jumpForce = 10f;
+    [SerializeField] private float m_ExtraJumpTime = 1f;
     [Space]
     [SerializeField] private LayerMask m_groundLayerMask;
     [SerializeField] private LayerMask m_wallsLayerMask;
@@ -21,6 +22,7 @@ public class PlayerController : MonoBehaviour
     [Space]
     [SerializeField] private float m_fallMultiplier = 2.5f;
     [SerializeField] private float m_lowJumpMultiplier = 2.5f;
+    [SerializeField] private float m_highJumpMultiplier = 2.5f;
     [Space]
     [SerializeField] private float m_groundDetectionPadding = 0.1f;
     [SerializeField] private float m_wallDetectionPadding = 0.05f;
@@ -54,6 +56,7 @@ public class PlayerController : MonoBehaviour
     private bool Grounded = false;
     private bool GroundedLastFrame = false;
     private bool JumpRequest = false;
+    private bool JumpHeld = false;
     private bool JumpBufferUsed = false;
     private float HorizontalMovement = 0;
 
@@ -61,6 +64,7 @@ public class PlayerController : MonoBehaviour
     private float HangCounter;
     private float JumpBufferCounter;
     private float JumpCooldownCounter;
+    private float CurrentExtraJumpTime;
 
     // Amim
     private float IdleCounter;
@@ -86,6 +90,8 @@ public class PlayerController : MonoBehaviour
         {
             JumpRequest = true;
         }
+
+        JumpHeld = Input.GetButton("Jump");
 
         HorizontalMovement = Input.GetAxis("Horizontal");
     }
@@ -158,18 +164,25 @@ public class PlayerController : MonoBehaviour
     private void Jump()
     {
         HangCounter = (Grounded) ? m_hangTime : HangCounter - Time.deltaTime;
-        //JumpBufferCounter = (JumpRequest) ? m_jumpBuffer : JumpBufferCounter - Time.deltaTime;
+        JumpBufferCounter = (JumpRequest) ? m_jumpBuffer : JumpBufferCounter - Time.deltaTime;
         JumpCooldownCounter -= Time.deltaTime;
 
-        if (JumpRequest)
+        if (JumpRequest && !Grounded)
         {
-            JumpBufferCounter = m_jumpBuffer;
             JumpBufferUsed = false;
         }
         else
         {
-            JumpBufferCounter -= Time.deltaTime;
             JumpBufferUsed = true;
+        }
+
+        if (JumpHeld)
+        {
+            CurrentExtraJumpTime -= Time.deltaTime;
+        }
+        else
+        {
+            CurrentExtraJumpTime = 0;
         }
 
         // Prevents accidental double jump, coyote time, buffer on jumping before ground is touched
@@ -178,6 +191,7 @@ public class PlayerController : MonoBehaviour
             HangCounter = 0;
             JumpBufferCounter = 0;
             JumpCooldownCounter = m_jumpCooldown;
+            CurrentExtraJumpTime = m_ExtraJumpTime;
 
             if (JumpBufferUsed)
             {
@@ -203,14 +217,20 @@ public class PlayerController : MonoBehaviour
              LandingParticles.Play();
         }
 
-        // less floaty jump
         if (myRigidbody.velocity.y < 0)
         {
             myRigidbody.gravityScale = m_fallMultiplier;
         }
         else if (myRigidbody.velocity.y > 0f)
         {
-            myRigidbody.gravityScale = m_lowJumpMultiplier;
+            if (CurrentExtraJumpTime > 0)
+            {
+                myRigidbody.gravityScale = m_highJumpMultiplier;
+            }
+            else
+            {
+                myRigidbody.gravityScale = m_lowJumpMultiplier;
+            }
         }
         else
         {
