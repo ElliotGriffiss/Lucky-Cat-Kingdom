@@ -11,23 +11,26 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float m_speed = 10f;
     [SerializeField] private float m_jumpForce = 10f;
     [Space]
-    [SerializeField] private float m_hangTime = 0.2f;
-
-    [Header("Jump Settings")]
-    [SerializeField] private float m_jumpBuffer = 0.2f;
-    [SerializeField] private float m_jumpCooldown = 0.2f;
-    [SerializeField] private float m_fallMultiplier = 2.5f;
-    [SerializeField] private float m_lowJumpMultiplier = 2.5f;
-    [SerializeField] private float m_groundDetectionPadding = 0.1f;
-    [SerializeField] private float m_wallDetectionPadding = 0.05f;
-    [Space]
     [SerializeField] private LayerMask platformLayerMask;
 
+    [Header("Jump Settings")]
+    [SerializeField] private float m_hangTime = 0.2f;
+    [SerializeField] private float m_jumpBuffer = 0.2f;
+    [SerializeField] private float m_jumpCooldown = 0.2f;
+    [Space]
+    [SerializeField] private float m_fallMultiplier = 2.5f;
+    [SerializeField] private float m_lowJumpMultiplier = 2.5f;
+    [Space]
+    [SerializeField] private float m_groundDetectionPadding = 0.1f;
+    [SerializeField] private float m_wallDetectionPadding = 0.05f;
+
+    [Header("Idle Settings")]
+    [SerializeField] private float IdleTimer = 5f;
+
     // Death
-    private bool PlayerHasControl = true;
     [SerializeField] private float ForceModifier = 1f;
     private IEnumerator coroutine;
-
+    private bool PlayerHasControl = true;
 
     [Header("Scene References")]
     [SerializeField] private SpriteRenderer myRenderer;
@@ -36,32 +39,39 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private BoxCollider2D myCollider;
     [SerializeField] private ParticleSystem BloodParticles;
 
-    private float HangCounter;
-    private float JumpBufferCounter;
-    private float JumpCooldownCounter;
-
+    // Vectors for collision detection
     private Vector2 playerSize;
     private Vector2 playerColliderOffset;
     private Vector2 CollisionSizeJump;
     private Vector2 CollisionsSizeWall;
 
+    // Current Character Information
     private bool Grounded = false;
+    private bool GroundedLastFrame = false;
     private bool JumpRequest = false;
+    private bool JumpBufferUsed = false;
+
     private float HorizontalMovement = 0;
 
+    // Timers to handle jumping
+    private float HangCounter;
+    private float JumpBufferCounter;
+    private float JumpCooldownCounter;
+
+    private float IdleCounter;
+
+
     private void Awake()
-    {
-
-    }
-
-    private void Update()
     {
         playerSize = myCollider.size;
         playerColliderOffset = myCollider.offset;
 
         CollisionSizeJump = new Vector2(myCollider.size.x - m_groundDetectionPadding, m_groundDetectionPadding);
         CollisionsSizeWall = new Vector2(m_wallDetectionPadding, myCollider.size.y - m_wallDetectionPadding);
+    }
 
+    private void Update()
+    {
         if (Input.GetButtonDown("Jump"))
         {
             JumpRequest = true;
@@ -74,8 +84,10 @@ public class PlayerController : MonoBehaviour
     {
         if (PlayerHasControl)
         {
+            GroundedLastFrame = Grounded;
             Grounded = IsGrounded();
 
+            Idle();
             Flip();
             Run();
             Jump();
@@ -101,17 +113,7 @@ public class PlayerController : MonoBehaviour
             boxCenter += playerColliderOffset;
 
             bool collidingWithWall = Physics2D.OverlapBox(boxCenter, CollisionsSizeWall, 0, platformLayerMask);
-
-            Vector2 t_tL = boxCenter + new Vector2(-CollisionsSizeWall.x * 0.5f, CollisionsSizeWall.y * 0.5f);
-            Vector2 t_tR = boxCenter + new Vector2(CollisionsSizeWall.x * 0.5f, CollisionsSizeWall.y * 0.5f);
-            Vector2 t_bL = boxCenter + new Vector2(-CollisionsSizeWall.x * 0.5f, -CollisionsSizeWall.y * 0.5f);
-            Vector2 t_bR = boxCenter + new Vector2(CollisionsSizeWall.x * 0.5f, -CollisionsSizeWall.y * 0.5f);
-            Color t_lineColor = (collidingWithWall) ? Color.red : Color.green;
-
-            Debug.DrawLine(t_tL, t_tR, t_lineColor);
-            Debug.DrawLine(t_bL, t_bR, t_lineColor);
-            Debug.DrawLine(t_tL, t_bL, t_lineColor);
-            Debug.DrawLine(t_tR, t_bR, t_lineColor);
+            DebugCollision(boxCenter, CollisionsSizeWall, !collidingWithWall);
 
             if (!collidingWithWall)
             {
@@ -134,18 +136,48 @@ public class PlayerController : MonoBehaviour
     private void Jump()
     {
         HangCounter = (Grounded) ? m_hangTime : HangCounter - Time.deltaTime;
-        JumpBufferCounter = (JumpRequest) ? m_jumpBuffer : JumpBufferCounter - Time.deltaTime;
+        //JumpBufferCounter = (JumpRequest) ? m_jumpBuffer : JumpBufferCounter - Time.deltaTime;
         JumpCooldownCounter -= Time.deltaTime;
 
-        // Prevents accidental double jump, coyote time, buffer on jumoing before ground is touched
+        if (JumpRequest)
+        {
+            JumpBufferCounter = m_jumpBuffer;
+            JumpBufferUsed = false;
+        }
+        else
+        {
+            JumpBufferCounter -= Time.deltaTime;
+            JumpBufferUsed = true;
+        }
+
+        // Prevents accidental double jump, coyote time, buffer on jumping before ground is touched
         if (HangCounter > 0 && JumpBufferCounter > 0 && JumpCooldownCounter <= 0)
         {
             HangCounter = 0;
             JumpBufferCounter = 0;
             JumpCooldownCounter = m_jumpCooldown;
 
-            myAnimator.SetBool("IsJumping", true);
+            if (JumpBufferUsed)
+            {
+                myAnimator.SetTrigger("IsLanding");
+                Debug.LogError("Buffer Used");
+            }
+
             myRigidbody.AddForce(new Vector2(myRigidbody.velocity.x, m_jumpForce), ForceMode2D.Impulse);
+        }
+
+        if (Grounded)
+        {
+            myAnimator.SetBool("IsJumping", false);
+        }
+        else
+        {
+            myAnimator.SetBool("IsJumping", true);
+        }
+
+        if (Grounded && !GroundedLastFrame)
+        {
+            myAnimator.SetTrigger("IsLanding");
         }
 
         // less floaty jump
@@ -171,44 +203,53 @@ public class PlayerController : MonoBehaviour
         boxCenter += playerColliderOffset;
 
         bool grounded = Physics2D.OverlapBox(boxCenter, CollisionSizeJump, 0, platformLayerMask);
+        DebugCollision(boxCenter, CollisionSizeJump, grounded);
+        return grounded;
+    }
 
-        Vector2 t_tL = boxCenter + new Vector2(-CollisionSizeJump.x * 0.5f, CollisionSizeJump.y * 0.5f);
-        Vector2 t_tR = boxCenter + new Vector2(CollisionSizeJump.x * 0.5f, CollisionSizeJump.y * 0.5f);
-        Vector2 t_bL = boxCenter + new Vector2(-CollisionSizeJump.x * 0.5f, -CollisionSizeJump.y * 0.5f);
-        Vector2 t_bR = boxCenter + new Vector2(CollisionSizeJump.x * 0.5f, -CollisionSizeJump.y * 0.5f);
-        Color t_lineColor = (grounded) ? Color.red : Color.green;
+    private void DebugCollision(Vector2 boxCenter, Vector2 boxSize, bool successful)
+    {
+        Vector2 t_tL = boxCenter + new Vector2(-boxSize.x * 0.5f, boxSize.y * 0.5f);
+        Vector2 t_tR = boxCenter + new Vector2(boxSize.x * 0.5f, boxSize.y * 0.5f);
+        Vector2 t_bL = boxCenter + new Vector2(-boxSize.x * 0.5f, -boxSize.y * 0.5f);
+        Vector2 t_bR = boxCenter + new Vector2(boxSize.x * 0.5f, -boxSize.y * 0.5f);
+        Color t_lineColor = (successful) ? Color.green : Color.red;
 
         Debug.DrawLine(t_tL, t_tR, t_lineColor);
         Debug.DrawLine(t_bL, t_bR, t_lineColor);
         Debug.DrawLine(t_tL, t_bL, t_lineColor);
         Debug.DrawLine(t_tR, t_bR, t_lineColor);
-
-        if (grounded)
-        {
-            myAnimator.SetBool("IsJumping", false);
-        }
-
-        return grounded;
     }
 
     private void Flip()
     {
         if (HorizontalMovement > 0)
         {
-            var newScale = new Vector3(
-            1 * Mathf.Abs(this.transform.localScale.x),
-            1 * Mathf.Abs(this.transform.localScale.y),
-            1 * Mathf.Abs(this.transform.localScale.y));
-            this.transform.localScale = newScale;
+            Vector3 newScale = new Vector3(1 * Mathf.Abs(this.transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            transform.localScale = newScale;
         }
         else if (HorizontalMovement < 0)
         {
-            var newScale = new Vector3(
-            -1 * Mathf.Abs(this.transform.localScale.x),
-             1 * Mathf.Abs(this.transform.localScale.y),
-             1 * Mathf.Abs(this.transform.localScale.y));
-            this.transform.localScale = newScale;
+            Vector3 newScale = new Vector3(-1 * Mathf.Abs(this.transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            transform.localScale = newScale;
+        }
+    }
 
+    private void Idle()
+    {
+        if (JumpRequest == false && HorizontalMovement == 0)
+        {
+            IdleCounter += Time.deltaTime;
+
+            if (IdleCounter >= IdleTimer)
+            {
+                myAnimator.SetBool("IsIdle", true);
+            }
+        }
+        else
+        {
+            myAnimator.SetBool("IsIdle", false);
+            IdleCounter = 0;
         }
     }
 
@@ -253,7 +294,7 @@ public class PlayerController : MonoBehaviour
     {
         if (col.gameObject.name.Equals("Platform"))
         {
-            this.transform.parent = null;
+            transform.parent = null;
         }
     }
 

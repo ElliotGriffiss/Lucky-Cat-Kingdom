@@ -1577,7 +1577,7 @@ GameObject:
   - component: {fileID: 623648735}
   - component: {fileID: 623648734}
   m_Layer: 0
-  m_Name: Foreground
+  m_Name: GroundExtras
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1881,6 +1881,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_speed: 10
   m_jumpForce: 9
+  platformLayerMask:
+    serializedVersion: 2
+    m_Bits: 128
   m_hangTime: 0.2
   m_jumpBuffer: 0.2
   m_jumpCooldown: 0.1
@@ -1888,9 +1891,7 @@ MonoBehaviour:
   m_lowJumpMultiplier: 4
   m_groundDetectionPadding: 0.1
   m_wallDetectionPadding: 0.1
-  platformLayerMask:
-    serializedVersion: 2
-    m_Bits: 128
+  IdleTimer: 5
   ForceModifier: 1
   myRenderer: {fileID: 342876925}
   myRigidbody: {fileID: 856342974}
