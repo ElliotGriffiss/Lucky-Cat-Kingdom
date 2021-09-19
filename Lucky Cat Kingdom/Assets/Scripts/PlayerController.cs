@@ -11,7 +11,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float m_speed = 10f;
     [SerializeField] private float m_jumpForce = 10f;
     [Space]
-    [SerializeField] private LayerMask platformLayerMask;
+    [SerializeField] private LayerMask m_groundLayerMask;
+    [SerializeField] private LayerMask m_wallsLayerMask;
 
     [Header("Jump Settings")]
     [SerializeField] private float m_hangTime = 0.2f;
@@ -122,7 +123,7 @@ public class PlayerController : MonoBehaviour
             Vector2 boxCenter = (Vector2)transform.position + direction * (playerSize.x) * 0.5f;
             boxCenter += playerColliderOffset;
 
-            bool collidingWithWall = Physics2D.OverlapBox(boxCenter, CollisionsSizeWall, 0, platformLayerMask);
+            bool collidingWithWall = Physics2D.OverlapBox(boxCenter, CollisionsSizeWall, 0, m_wallsLayerMask);
             DebugCollision(boxCenter, CollisionsSizeWall, !collidingWithWall);
 
             if (!collidingWithWall)
@@ -196,10 +197,10 @@ public class PlayerController : MonoBehaviour
             myAnimator.SetBool("IsJumping", true);
         }
 
-        if (Grounded && !GroundedLastFrame)
+        if (Grounded && !GroundedLastFrame && myRigidbody.velocity.y < 0.01f)
         {
             myAnimator.SetTrigger("IsLanding");
-            LandingParticles.Play();
+             LandingParticles.Play();
         }
 
         // less floaty jump
@@ -207,7 +208,7 @@ public class PlayerController : MonoBehaviour
         {
             myRigidbody.gravityScale = m_fallMultiplier;
         }
-        else if (myRigidbody.velocity.y > 0f && !Input.GetButton("Jump"))
+        else if (myRigidbody.velocity.y > 0f)
         {
             myRigidbody.gravityScale = m_lowJumpMultiplier;
         }
@@ -224,7 +225,7 @@ public class PlayerController : MonoBehaviour
         Vector2 boxCenter = (Vector2)transform.position + Vector2.down * (playerSize.y) * 0.5f;
         boxCenter += playerColliderOffset;
 
-        bool grounded = Physics2D.OverlapBox(boxCenter, CollisionSizeJump, 0, platformLayerMask);
+        bool grounded = Physics2D.OverlapBox(boxCenter, CollisionSizeJump, 0, m_groundLayerMask);
         DebugCollision(boxCenter, CollisionSizeJump, grounded);
         return grounded;
     }
