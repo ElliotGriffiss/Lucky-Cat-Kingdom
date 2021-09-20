@@ -166,14 +166,13 @@ public class PlayerController : MonoBehaviour
         HangCounter = (Grounded) ? m_hangTime : HangCounter - Time.deltaTime;
         JumpBufferCounter = (JumpRequest) ? m_jumpBuffer : JumpBufferCounter - Time.deltaTime;
         JumpCooldownCounter -= Time.deltaTime;
+    
 
+        // bug here
         if (JumpRequest && !Grounded)
         {
-            JumpBufferUsed = false;
-        }
-        else
-        {
             JumpBufferUsed = true;
+            Debug.Log("Used");
         }
 
         if (JumpHeld)
@@ -195,11 +194,17 @@ public class PlayerController : MonoBehaviour
 
             if (JumpBufferUsed)
             {
+                Debug.Log("played");
                 myAnimator.SetTrigger("IsLanding");
                 LandingParticles.Play();
             }
 
+            JumpBufferUsed = false;
             myRigidbody.AddForce(new Vector2(myRigidbody.velocity.x, m_jumpForce), ForceMode2D.Impulse);
+        }
+        else
+        {
+            JumpBufferUsed = false;
         }
 
         if (Grounded)
@@ -211,10 +216,12 @@ public class PlayerController : MonoBehaviour
             myAnimator.SetBool("IsJumping", true);
         }
 
-        if (Grounded && !GroundedLastFrame && myRigidbody.velocity.y < 0.01f)
+        if (Grounded && !GroundedLastFrame)
         {
             myAnimator.SetTrigger("IsLanding");
-             LandingParticles.Play();
+
+            if (myRigidbody.velocity.y < 0.01f)
+                LandingParticles.Play();
         }
 
         if (myRigidbody.velocity.y < 0.0001f)
