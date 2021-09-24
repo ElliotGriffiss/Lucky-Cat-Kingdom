@@ -17,8 +17,8 @@ TagManager:
   - Permeable Ground
   - 
   - Player
-  - 
-  - 
+  - Enemy
+  - EnemyTrigger
   - 
   - 
   - 
@@ -46,6 +46,9 @@ TagManager:
     locked: 0
   - name: Ground
     uniqueID: 913310969
+    locked: 0
+  - name: Enemies
+    uniqueID: 1108569263
     locked: 0
   - name: Player
     uniqueID: 2887140859

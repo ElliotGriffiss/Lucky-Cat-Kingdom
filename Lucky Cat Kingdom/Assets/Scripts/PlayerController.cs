@@ -32,6 +32,8 @@ public class PlayerController : MonoBehaviour
 
     // Death
     [SerializeField] private float ForceModifier = 1f;
+    [SerializeField] private float DamageUplift;
+    [SerializeField] private float DamageTime = 0.5f;
     private IEnumerator coroutine;
     private bool PlayerHasControl = true;
 
@@ -100,21 +102,22 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        GroundedLastFrame = Grounded;
+        Grounded = IsGrounded();
+
         if (PlayerHasControl)
         {
-            GroundedLastFrame = Grounded;
-            Grounded = IsGrounded();
-
             Idle();
             Flip();
-            Run();
             Jump();
         }
 
-       // if (Vector3.Distance(groundedStart, groundedEnd) < 0.01f)
-       // {
-            // play particle effect
-       // }
+        Run();
+
+        // if (Vector3.Distance(groundedStart, groundedEnd) < 0.01f)
+        // {
+        // play particle effect
+        // }
     }
 
     private void Run()
@@ -174,7 +177,6 @@ public class PlayerController : MonoBehaviour
         JumpBufferCounter = (JumpRequest) ? m_jumpBuffer : JumpBufferCounter - Time.deltaTime;
         JumpCooldownCounter -= Time.deltaTime;
     
-
         // bug here
         if (JumpRequest && !Grounded)
         {
@@ -316,61 +318,36 @@ public class PlayerController : MonoBehaviour
         {
             transform.parent = col.transform;
         }
-
-        if (col.gameObject.tag == "DamageBlock" && coroutine == null)
-        {
-            PlayerHasControl = false;
-            myRigidbody.freezeRotation = false;
-            myAnimator.SetBool("Dead", true);
-            BloodParticles.Play();
-            myRigidbody.AddForceAtPosition(GenerateRandomForce(), col.gameObject.transform.position, ForceMode2D.Impulse);
-            coroutine = PlayerDeathSequence();
-            StartCoroutine(coroutine);
-        }
-
-        if (coroutine != null)
-        {
-            myRigidbody.AddForceAtPosition(GenerateRandomForce(), col.gameObject.transform.position, ForceMode2D.Impulse);
-            BloodParticles.Play();
-        }
     }
 
     public void OnTriggerEnter2D(Collider2D col)
     {
-        if (col.gameObject.tag == "DamageBlock" && coroutine == null)
+        if (col.gameObject.layer == 13 && coroutine == null)
         {
             PlayerHasControl = false;
-            myRigidbody.freezeRotation = false;
-            myAnimator.SetBool("Dead", true);
-            coroutine = PlayerDeathSequence();
+            myAnimator.SetBool("Injured", true);
+
+            myRigidbody.velocity = Vector2.zero;
+            Vector2 knockbackforce = (transform.position - col.transform.position) * ForceModifier;
+            myRigidbody.AddForce(new Vector2(knockbackforce.x, DamageUplift), ForceMode2D.Impulse);
+
+            coroutine = PlayerDamageSequence();
             StartCoroutine(coroutine);
         }
     }
 
-    void OnCollisionExit2D(Collision2D col)
+    private IEnumerator PlayerDamageSequence()
     {
-        if (col.gameObject.name.Equals("Platform"))
-        {
-            transform.parent = null;
-        }
-    }
+        HangCounter = 0;
+        JumpBufferCounter = 0;
+        JumpCooldownCounter = m_jumpCooldown;
+        CurrentExtraJumpTime = m_ExtraJumpTime;
+        Grounded = false;
 
-    private IEnumerator PlayerDeathSequence()
-    {
-        yield return new WaitForSeconds(1f);
-        myAnimator.SetBool("Dead", false);
+        yield return new WaitForSeconds(DamageTime);
+        myAnimator.SetBool("Injured", false);
         PlayerHasControl = true;
-        transform.rotation = Quaternion.Euler(0f, 0f, 0f);
-        myRigidbody.freezeRotation = true;
-        myRigidbody.velocity = Vector2.zero;
-        BloodParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
 
-        Vector3 oldPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z);
         coroutine = null;
-    }
-
-    private Vector2 GenerateRandomForce()
-    {
-        return new Vector2(UnityEngine.Random.Range(-ForceModifier, ForceModifier), UnityEngine.Random.Range(-ForceModifier, ForceModifier));
     }
 }
