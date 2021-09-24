@@ -96,6 +96,8 @@ public class PlayerController : MonoBehaviour
         HorizontalMovement = Input.GetAxis("Horizontal");
     }
 
+
+
     private void FixedUpdate()
     {
         if (PlayerHasControl)
@@ -108,6 +110,11 @@ public class PlayerController : MonoBehaviour
             Run();
             Jump();
         }
+
+       // if (Vector3.Distance(groundedStart, groundedEnd) < 0.01f)
+       // {
+            // play particle effect
+       // }
     }
 
     private void Run()
