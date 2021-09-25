@@ -31,6 +31,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float IdleTimer = 5f;
 
     // Death
+    [Header("Death Settings")]
+    [SerializeField] private float MinYValue;
     [SerializeField] private float ForceModifier = 1f;
     [SerializeField] private float DamageUplift;
     [SerializeField] private float DamageTime = 0.5f;
@@ -74,6 +76,9 @@ public class PlayerController : MonoBehaviour
     // Particles
     private ParticleSystem.EmissionModule DustEmissionModule;
 
+    //Respawn
+    private SpawnPoint CurrentSpawnPoint;
+
 
     private void Awake()
     {
@@ -113,6 +118,7 @@ public class PlayerController : MonoBehaviour
         }
 
         Run();
+        CheckForDeath();
 
         // if (Vector3.Distance(groundedStart, groundedEnd) < 0.01f)
         // {
@@ -312,6 +318,18 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void CheckForDeath()
+    {
+        if (transform.position.y < MinYValue)
+        {
+            PlayerHasControl = false;
+            myRigidbody.simulated = false;
+
+            coroutine = PlayerRespawnSequence();
+            StartCoroutine(coroutine);
+        }
+    }
+
     void OnCollisionEnter2D(Collision2D col)
     {
         if (col.gameObject.name.Equals("Platform"))
@@ -337,23 +355,41 @@ public class PlayerController : MonoBehaviour
 
         if (col.gameObject.layer == 15)
         {
-            SpawnPoint point = col.gameObject.GetComponent<SpawnPoint>();
-            point.SetSpawnPoint();
+            CurrentSpawnPoint = col.gameObject.GetComponent<SpawnPoint>();
+            CurrentSpawnPoint.SetSpawnPoint();
         }
     }
 
+    private IEnumerator PlayerRespawnSequence()
+    {
+        ResetCharacterPhysics();
+        yield return new WaitForSeconds(DamageTime);
+        CurrentSpawnPoint.PlayerRespawned();
+        gameObject.transform.position = CurrentSpawnPoint.SpawnPosition.position;
+        yield return new WaitForSeconds(0.1f);
+        myRigidbody.simulated = true;
+        PlayerHasControl = true;
+        myRigidbody.velocity = Vector2.zero;
+
+        coroutine = null;
+    }
+
     private IEnumerator PlayerDamageSequence()
+    {
+        ResetCharacterPhysics();
+        yield return new WaitForSeconds(DamageTime);
+        myAnimator.SetBool("Injured", false);
+        PlayerHasControl = true;
+
+        coroutine = null;
+    }
+
+    private void ResetCharacterPhysics()
     {
         HangCounter = 0;
         JumpBufferCounter = 0;
         JumpCooldownCounter = m_jumpCooldown;
         CurrentExtraJumpTime = m_ExtraJumpTime;
         Grounded = false;
-
-        yield return new WaitForSeconds(DamageTime);
-        myAnimator.SetBool("Injured", false);
-        PlayerHasControl = true;
-
-        coroutine = null;
     }
 }

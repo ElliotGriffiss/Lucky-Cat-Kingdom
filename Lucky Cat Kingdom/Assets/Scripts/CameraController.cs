@@ -8,11 +8,23 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float FollowSpeed;
 	[Space]
 	[SerializeField] private Vector3 CameraOffset;
+	[SerializeField] private float MaxYValue;
+	[SerializeField] private float MinYValue;
 
 	private void Update()
 	{
 		Vector3 desiredPosition = FollowTransform.position + CameraOffset;
 		Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, FollowSpeed);
+
+		if (smoothedPosition.y > MaxYValue)
+        {
+			smoothedPosition.y = MaxYValue;
+		}
+		else if (smoothedPosition.y < MinYValue)
+        {
+			smoothedPosition.y = MinYValue;
+		}
+
 		transform.position = smoothedPosition;
 	}
 
