@@ -334,6 +334,12 @@ public class PlayerController : MonoBehaviour
             coroutine = PlayerDamageSequence();
             StartCoroutine(coroutine);
         }
+
+        if (col.gameObject.layer == 15)
+        {
+            SpawnPoint point = col.gameObject.GetComponent<SpawnPoint>();
+            point.SetSpawnPoint();
+        }
     }
 
     private IEnumerator PlayerDamageSequence()
