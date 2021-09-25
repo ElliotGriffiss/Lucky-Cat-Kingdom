@@ -36,6 +36,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float ForceModifier = 1f;
     [SerializeField] private float DamageUplift;
     [SerializeField] private float DamageTime = 0.5f;
+    [SerializeField] private float FlashEffectSpeed;
     private IEnumerator coroutine;
     private bool PlayerHasControl = true;
 
@@ -366,7 +367,9 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(DamageTime);
         CurrentSpawnPoint.PlayerRespawned();
         gameObject.transform.position = CurrentSpawnPoint.SpawnPosition.position;
+        myRenderer.enabled = false;
         yield return new WaitForSeconds(0.1f);
+        myRenderer.enabled = true;
         myRigidbody.simulated = true;
         PlayerHasControl = true;
         myRigidbody.velocity = Vector2.zero;
@@ -377,7 +380,20 @@ public class PlayerController : MonoBehaviour
     private IEnumerator PlayerDamageSequence()
     {
         ResetCharacterPhysics();
-        yield return new WaitForSeconds(DamageTime);
+
+        myRenderer.material.SetFloat("_FlashAmount", 1);
+        yield return new WaitForSeconds(0.1f);
+
+        myRenderer.material.SetFloat("_FlashAmount", 0);
+        float currentDamagetime = 0f;
+
+        while (currentDamagetime < DamageTime - 0.1f)
+        {
+            currentDamagetime += Time.deltaTime;
+            yield return null;
+        }
+
+        myRenderer.color = Color.white;
         myAnimator.SetBool("Injured", false);
         PlayerHasControl = true;
 
