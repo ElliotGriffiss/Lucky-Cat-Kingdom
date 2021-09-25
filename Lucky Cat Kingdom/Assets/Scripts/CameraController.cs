@@ -15,7 +15,8 @@ public class CameraController : MonoBehaviour
 		Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, FollowSpeed);
 		transform.position = smoothedPosition;
 	}
-	public void TeleportCameraToTarget()
+
+	public void SetCameraPositionImmediate()
 	{
 		Vector3 desiredPosition = FollowTransform.position + CameraOffset;
 		transform.position = desiredPosition;
