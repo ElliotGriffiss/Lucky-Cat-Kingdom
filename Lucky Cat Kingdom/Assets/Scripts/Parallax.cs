@@ -28,10 +28,15 @@ public class Parallax : MonoBehaviour
 
         LastCameraPos = Camera.transform.position;
 
-        if (Mathf.Abs(Camera.transform.position.x - transform.position.x) >= textureUnitSize)
+        if (transform.position.x - Camera.position.x < -textureUnitSize)
         {
-            float offset = Camera.transform.position.x - transform.position.x % textureUnitSize;
-            transform.position = new Vector3(Camera.transform.position.x + offset, transform.position.y);
+            Debug.Log("Update Left");
+            transform.position = new Vector2(Camera.transform.position.x + textureUnitSize, transform.position.y);
+        }
+        else if (transform.position.x - Camera.position.x > textureUnitSize)
+        {
+            Debug.Log("Update Right");
+            transform.position = new Vector2(Camera.transform.position.x - textureUnitSize, transform.position.y);
         }
     }
 }
