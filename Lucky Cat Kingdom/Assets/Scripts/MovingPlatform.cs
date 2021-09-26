@@ -26,8 +26,6 @@ public class MovingPlatform : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D col)
     {
-        Debug.Log("Enter");
-
         if (col.gameObject.layer == 11 && col.gameObject.transform.position.y > gameObject.transform.position.y)
         {
             col.collider.transform.parent.SetParent(transform);
@@ -37,8 +35,6 @@ public class MovingPlatform : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D col)
     {
-        Debug.Log("Exit");
-
         if (col.gameObject.layer == 11)
         {
             col.collider.transform.parent.SetParent(null);

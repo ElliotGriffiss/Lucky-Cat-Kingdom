@@ -14,6 +14,18 @@ TextureImporter:
   - first:
       213: 6910761331691433455
     second: Cat King Water Anim_3
+  - first:
+      213: 5996256244663993689
+    second: Cat King Water Anim_4
+  - first:
+      213: -3837263271578529097
+    second: Cat King Water Anim_5
+  - first:
+      213: 2337872972446676902
+    second: Cat King Water Anim_6
+  - first:
+      213: -3180606090545925090
+    second: Cat King Water Anim_7
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -206,6 +218,90 @@ TextureImporter:
       bones: []
       spriteID: fed29fef0d4f7ef50800000000000000
       internalID: 6910761331691433455
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cat King Water Anim_4
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9554a65f84bf63350800000000000000
+      internalID: 5996256244663993689
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cat King Water Anim_5
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 0
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7b298eb926d4fbac0800000000000000
+      internalID: -3837263271578529097
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cat King Water Anim_6
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6a7bba4f41bc17020800000000000000
+      internalID: 2337872972446676902
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cat King Water Anim_7
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 0
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e14f09abc973cd3d0800000000000000
+      internalID: -3180606090545925090
       vertices: []
       indices: 
       edges: []
