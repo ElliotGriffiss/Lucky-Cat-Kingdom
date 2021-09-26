@@ -36,7 +36,7 @@ public class HedgehogController : MonoBehaviour
             Vector2 playerVelocity = new Vector2(direction.x * speed, Rigidbody2D.velocity.y);
             Rigidbody2D.AddForce(playerVelocity);
 
-            if (Vector3.Distance(transform.position, StartPos.position) < 1)
+            if (Vector3.Distance(transform.position, StartPos.position) < 0.25f)
             {
                 Rigidbody2D.velocity = Vector2.zero;
                 currentOpenTime = 0;
@@ -51,7 +51,7 @@ public class HedgehogController : MonoBehaviour
             Vector2 playerVelocity = new Vector2(direction.x * speed, Rigidbody2D.velocity.y);
             Rigidbody2D.AddForce(playerVelocity);
 
-            if (Vector3.Distance(transform.position, EndPos.position) < 1)
+            if (Vector3.Distance(transform.position, EndPos.position) < 0.25f)
             {
                 Rigidbody2D.velocity = Vector2.zero;
                 currentOpenTime = 0;

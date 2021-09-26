@@ -14,7 +14,7 @@ public class Parallax : MonoBehaviour
 
     private void Start()
     {
-        LastCameraPos = Vector2.zero;
+        LastCameraPos = Camera.transform.position;
 
         Texture2D texture = SpriteRenderer.sprite.texture;
         textureUnitSize = texture.width / SpriteRenderer.sprite.pixelsPerUnit;
