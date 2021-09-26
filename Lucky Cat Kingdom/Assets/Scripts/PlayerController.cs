@@ -47,10 +47,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Animator myAnimator;
     [SerializeField] private BoxCollider2D myCollider;
     [Space]
+    [SerializeField] private TimeManager Timer;
+    [Space]
     [SerializeField] private ParticleSystem LandingParticles;
     [SerializeField] private ParticleSystem FootstepParticles;
-
-    [SerializeField] private ParticleSystem BloodParticles;
 
     // Vectors for collision detection
     private Vector2 playerSize;
@@ -104,8 +104,6 @@ public class PlayerController : MonoBehaviour
 
         HorizontalMovement = Input.GetAxis("Horizontal");
     }
-
-
 
     private void FixedUpdate()
     {
@@ -315,6 +313,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
+            Timer.StartTimer();
             myAnimator.SetBool("IsIdle", false);
             IdleCounter = 0;
         }
@@ -354,10 +353,13 @@ public class PlayerController : MonoBehaviour
 
             if (col.gameObject.tag == "Raven")
             {
+                Vector3 halfwayPoint = Vector3.Lerp(col.transform.position, transform.position, 0.5f);
+                Timer.PlayerTakenDamage(damageType, halfwayPoint);
                 damageType = DamageType.Raven;
             }
             else if (col.gameObject.tag == "Hedgehog")
             {
+                Timer.PlayerTakenDamage(damageType, col.transform.position + Vector3.up);
                 damageType = DamageType.Hedgehog;
             }
 
@@ -376,9 +378,9 @@ public class PlayerController : MonoBehaviour
     {
         ResetCharacterPhysics();
         yield return new WaitForSeconds(DamageTime);
-        TimeManager.Instance.PlayerTakenDamage(DamageType.Falling);
-        CurrentSpawnPoint.PlayerRespawned();
         gameObject.transform.position = CurrentSpawnPoint.SpawnPosition.position;
+        Timer.PlayerTakenDamage(DamageType.Falling, gameObject.transform.position + Vector3.right);
+        CurrentSpawnPoint.PlayerRespawned();
         myRenderer.enabled = false;
         yield return new WaitForSeconds(0.1f);
         myRenderer.enabled = true;
@@ -393,7 +395,6 @@ public class PlayerController : MonoBehaviour
     private IEnumerator PlayerDamageSequence(DamageType damageType)
     {
         ResetCharacterPhysics();
-        TimeManager.Instance.PlayerTakenDamage(damageType);
 
         myRenderer.material.SetFloat("_FlashAmount", 1);
         yield return new WaitForSeconds(0.1f);

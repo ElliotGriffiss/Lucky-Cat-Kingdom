@@ -5,6 +5,7 @@ using DataClasses;
 
 public class Coin : MonoBehaviour
 {
+    [SerializeField] private TimeManager Timer;
     [SerializeField] private CoinType Type;
 
 
@@ -13,8 +14,7 @@ public class Coin : MonoBehaviour
         if (col.gameObject.layer == 11)
         {
             gameObject.SetActive(false);
-
-            TimeManager.Instance.CoinCollected(Type);
+            Timer.CoinCollected(Type, gameObject.transform.position);
         }
     }
 }
