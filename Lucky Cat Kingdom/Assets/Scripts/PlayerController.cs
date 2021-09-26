@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using DataClasses;
 
 public class PlayerController : MonoBehaviour
 {
@@ -321,11 +322,10 @@ public class PlayerController : MonoBehaviour
 
     private void CheckForDeath()
     {
-        if (transform.position.y < MinYValue)
+        if (transform.position.y < MinYValue && coroutine == null)
         {
             PlayerHasControl = false;
             myRigidbody.simulated = false;
-
             coroutine = PlayerRespawnSequence();
             StartCoroutine(coroutine);
         }
@@ -350,7 +350,18 @@ public class PlayerController : MonoBehaviour
             Vector2 knockbackforce = (transform.position - col.transform.position) * ForceModifier;
             myRigidbody.AddForce(new Vector2(knockbackforce.x, DamageUplift), ForceMode2D.Impulse);
 
-            coroutine = PlayerDamageSequence();
+            DamageType damageType = DamageType.Falling;
+
+            if (col.gameObject.tag == "Raven")
+            {
+                damageType = DamageType.Raven;
+            }
+            else if (col.gameObject.tag == "Hedgehog")
+            {
+                damageType = DamageType.Hedgehog;
+            }
+
+            coroutine = PlayerDamageSequence(damageType);
             StartCoroutine(coroutine);
         }
 
@@ -365,11 +376,13 @@ public class PlayerController : MonoBehaviour
     {
         ResetCharacterPhysics();
         yield return new WaitForSeconds(DamageTime);
+        TimeManager.Instance.PlayerTakenDamage(DamageType.Falling);
         CurrentSpawnPoint.PlayerRespawned();
         gameObject.transform.position = CurrentSpawnPoint.SpawnPosition.position;
         myRenderer.enabled = false;
         yield return new WaitForSeconds(0.1f);
         myRenderer.enabled = true;
+        yield return new WaitForSeconds(0.4f);
         myRigidbody.simulated = true;
         PlayerHasControl = true;
         myRigidbody.velocity = Vector2.zero;
@@ -377,9 +390,10 @@ public class PlayerController : MonoBehaviour
         coroutine = null;
     }
 
-    private IEnumerator PlayerDamageSequence()
+    private IEnumerator PlayerDamageSequence(DamageType damageType)
     {
         ResetCharacterPhysics();
+        TimeManager.Instance.PlayerTakenDamage(damageType);
 
         myRenderer.material.SetFloat("_FlashAmount", 1);
         yield return new WaitForSeconds(0.1f);

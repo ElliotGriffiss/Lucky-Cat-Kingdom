@@ -1,18 +1,49 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using DataClasses;
 
-public class TimeManager : MonoBehaviour
+public class TimeManager : Singleton<TimeManager>
 {
-    // Start is called before the first frame update
-    void Start()
+    public Text TimerDisplay;
+
+    private float currentTime;
+
+    private void Update()
     {
-        
+        currentTime += Time.deltaTime;
+        TimerDisplay.text = currentTime.ToString("0.0") + "s";
     }
 
-    // Update is called once per frame
-    void Update()
+    public void CoinCollected(CoinType type)
     {
-        
+        switch (type)
+        {
+            case CoinType.Normal:
+                currentTime += -1;
+                break;
+            case CoinType.Eighty3Coin:
+                currentTime += -3;
+                break;
+        }
+    }
+
+    public void PlayerTakenDamage(DamageType type)
+    {
+        switch (type)
+        {
+            case DamageType.Hedgehog:
+                currentTime += 1;
+                break;
+            case DamageType.Raven:
+                currentTime += 1;
+                break;
+            case DamageType.Falling:
+                currentTime += 1;
+                break;
+        }
+
+        Debug.Log(type);
     }
 }

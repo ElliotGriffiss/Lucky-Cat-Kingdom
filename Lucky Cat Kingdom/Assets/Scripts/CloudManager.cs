@@ -19,7 +19,7 @@ public class CloudManager : MonoBehaviour
     {
         foreach(GameObject obj in InstantiatedGameObjects)
         {
-            if (obj.transform.position.x > EndPos.position.x)
+            if (obj.transform.position.x < EndPos.position.x)
             {
                 obj.transform.position = new Vector2(StartPos.position.x, obj.transform.position.y);
             }
