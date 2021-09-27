@@ -26,11 +26,15 @@ public class TimeManager : MonoBehaviour
     [SerializeField] private ParticleSystem ParticlesMinus3;
 
     private ParticleSystem.EmitParams EmitParams;
+    private IEnumerator coroutine;
 
     private float currentTime = 0f;
     private bool timerRunning = false;
 
-    private IEnumerator coroutine;
+    public int CoinsCollected = 0;
+    public int Eighty3CoinsCollected = 0;
+    public int TimesDamaged = 0;
+
 
     private void Update()
     {
@@ -47,16 +51,23 @@ public class TimeManager : MonoBehaviour
         timerRunning = true;
     }
 
+    public void StopTimer()
+    {
+        timerRunning = false;
+    }
+
     public void CoinCollected(CoinType type , Vector3 position)
     {
         switch (type)
         {
             case CoinType.Normal:
+                CoinsCollected++;
                 currentTime += -1;
                 EmitParams.position = position;
                 ParticlesMinus1.Emit(EmitParams, 1);
                 break;
             case CoinType.Eighty3Coin:
+                Eighty3CoinsCollected++;
                 currentTime += -3;
                 EmitParams.position = position;
                 ParticlesMinus3.Emit(EmitParams, 1);
@@ -88,6 +99,7 @@ public class TimeManager : MonoBehaviour
                 break;
         }
 
+        TimesDamaged++;
         EmitParams.position = position;
         ParticlesPlus1.Emit(EmitParams, 1);
 
@@ -141,5 +153,10 @@ public class TimeManager : MonoBehaviour
             currentFlashTime += Time.deltaTime;
             yield return null;
         }
+    }
+
+    public float GetTime()
+    {
+        return currentTime;
     }
 }

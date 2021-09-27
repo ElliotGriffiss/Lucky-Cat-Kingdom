@@ -40,6 +40,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float FlashEffectSpeed;
     private IEnumerator coroutine;
     private bool PlayerHasControl = true;
+    private bool InMenus = false;
 
     [Header("Scene References")]
     [SerializeField] private SpriteRenderer myRenderer;
@@ -110,20 +111,22 @@ public class PlayerController : MonoBehaviour
         GroundedLastFrame = Grounded;
         Grounded = IsGrounded();
 
-        if (PlayerHasControl)
+        if (!InMenus)
         {
-            Idle();
-            Flip();
-            Jump();
+            if (PlayerHasControl)
+            {
+                Idle();
+                Flip();
+                Jump();
+            }
+
+            Run();
+            CheckForDeath();
         }
-
-        Run();
-        CheckForDeath();
-
-        // if (Vector3.Distance(groundedStart, groundedEnd) < 0.01f)
-        // {
-        // play particle effect
-        // }
+        else
+        {
+            myAnimator.SetBool("IsSleeping", true);
+        }
     }
 
     private void Run()
@@ -138,7 +141,6 @@ public class PlayerController : MonoBehaviour
         {
             direction = Vector2.left;
         }
-        
 
         if (direction != Vector2.zero)
         {
@@ -187,7 +189,6 @@ public class PlayerController : MonoBehaviour
         if (JumpRequest && !Grounded)
         {
             JumpBufferUsed = true;
-            Debug.Log("Used");
         }
 
         if (JumpHeld)
@@ -209,7 +210,6 @@ public class PlayerController : MonoBehaviour
 
             if (JumpBufferUsed)
             {
-                Debug.Log("played");
                 myAnimator.SetTrigger("IsLanding");
                 LandingParticles.Play();
             }
@@ -346,6 +346,7 @@ public class PlayerController : MonoBehaviour
             myAnimator.SetBool("Injured", true);
 
             myRigidbody.velocity = Vector2.zero;
+            myRigidbody.gravityScale = m_lowJumpMultiplier;
             Vector2 knockbackforce = (transform.position - col.transform.position) * ForceModifier;
             myRigidbody.AddForce(new Vector2(knockbackforce.x, DamageUplift), ForceMode2D.Impulse);
 
@@ -411,6 +412,7 @@ public class PlayerController : MonoBehaviour
         myRenderer.color = Color.white;
         myAnimator.SetBool("Injured", false);
         PlayerHasControl = true;
+        myRigidbody.gravityScale = 1f;
 
         coroutine = null;
     }
@@ -422,5 +424,11 @@ public class PlayerController : MonoBehaviour
         JumpCooldownCounter = m_jumpCooldown;
         CurrentExtraJumpTime = m_ExtraJumpTime;
         Grounded = false;
+    }
+
+    public void SetInMenus()
+    {
+        myRigidbody.velocity = Vector2.zero;
+        InMenus = true;
     }
 }

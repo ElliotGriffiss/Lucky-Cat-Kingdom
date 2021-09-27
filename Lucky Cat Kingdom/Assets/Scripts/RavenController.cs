@@ -100,8 +100,6 @@ public class RavenController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D col)
     {
-        Debug.Log("Enter");
-
         if (col.gameObject.layer == 11)
         {
             Target = col.transform;
