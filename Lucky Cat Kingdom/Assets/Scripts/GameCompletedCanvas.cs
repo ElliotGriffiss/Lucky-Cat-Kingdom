@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class GameCompletedCanvas : MonoBehaviour
 {
@@ -13,11 +14,11 @@ public class GameCompletedCanvas : MonoBehaviour
 
     [Header("UI Components")]
     [SerializeField] private Image Background;
-    [SerializeField] private Text CoinsCollected;
-    [SerializeField] private Text Eighty3CoinsCollected;
-    [SerializeField] private Text TimesHit;
+    [SerializeField] private TextMeshProUGUI CoinsCollected;
+    [SerializeField] private TextMeshProUGUI Eighty3CoinsCollected;
+    [SerializeField] private TextMeshProUGUI TimesHit;
     [Space]
-    [SerializeField] private Text FinalTime;
+    [SerializeField] private TextMeshProUGUI FinalTime;
 
     [Header("Animation Settings")]
     [SerializeField] private float OpenTime = 1f;

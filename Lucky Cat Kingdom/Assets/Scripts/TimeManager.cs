@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using DataClasses;
 
 public class TimeManager : MonoBehaviour
 {
     [Header("Scene References")]
-    [SerializeField] private Text TimerDisplay;
+    [SerializeField] private TextMeshProUGUI TimerDisplay;
 
     [Header("Damage Animation Settings")]
     [SerializeField] private Color Red;
