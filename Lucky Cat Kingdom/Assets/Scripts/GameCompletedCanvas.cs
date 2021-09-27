@@ -50,7 +50,7 @@ public class GameCompletedCanvas : MonoBehaviour
 
     private IEnumerator GameCompletedSequence()
     {
-        yield return waitForFrameEnd;
+        yield return new WaitForSeconds(UITickPause);
         float currentOpenTime = 0;
 
         while (currentOpenTime < OpenTime)
