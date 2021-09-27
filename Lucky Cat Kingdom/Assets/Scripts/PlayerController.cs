@@ -82,6 +82,11 @@ public class PlayerController : MonoBehaviour
     //Respawn
     private SpawnPoint CurrentSpawnPoint;
 
+    // Controller
+    private bool JoyStickConnected = true;
+    private float JoyStickConnectedCheck = 1f;
+    private float currentJoyStickConnectedCheck = 01f; // Forces it to check at start;
+
 
     private void Awake()
     {
@@ -103,7 +108,22 @@ public class PlayerController : MonoBehaviour
 
         JumpHeld = Input.GetButton("Jump");
 
-        HorizontalMovement = Input.GetAxis("Horizontal");
+        if (JoyStickConnected)
+        {
+            HorizontalMovement = Input.GetAxisRaw("Horizontal");
+        }
+        else
+        {
+            HorizontalMovement = Input.GetAxis("Horizontal");
+        }
+
+        if (currentJoyStickConnectedCheck >= JoyStickConnectedCheck)
+        {
+            currentJoyStickConnectedCheck = 0f;
+            JoyStickConnected = CheckJoyStickConnected();
+        }
+
+        currentJoyStickConnectedCheck += Time.deltaTime;
     }
 
     private void FixedUpdate()
@@ -430,5 +450,36 @@ public class PlayerController : MonoBehaviour
     {
         myRigidbody.velocity = Vector2.zero;
         InMenus = true;
+    }
+
+    private bool CheckJoyStickConnected()
+    {
+        //Get Joystick Names
+        string[] temp = Input.GetJoystickNames();
+
+        //Check whether array contains anything
+        if (temp.Length > 0)
+        {
+            //Iterate over every element
+            for (int i = 0; i < temp.Length; ++i)
+            {
+                //Check if the string is empty or not
+                if (!string.IsNullOrEmpty(temp[i]))
+                {
+                    //Not empty, controller temp[i] is connected
+                    Debug.Log("Controller " + i + " is connected using: " + temp[i]);
+                    return true;
+                }
+                else
+                {
+                    //If it is empty, controller i is disconnected
+                    //where i indicates the controller number
+                    Debug.Log("Controller: " + i + " is disconnected.");
+                    return false;
+                }
+            }
+        }
+
+        return false;
     }
 }
