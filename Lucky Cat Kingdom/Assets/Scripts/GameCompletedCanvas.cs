@@ -8,28 +8,23 @@ using TMPro;
 public class GameCompletedCanvas : MonoBehaviour
 {
     [Header("Scene References")]
+    [SerializeField] private CanvasCoverController CanvasCoverController;
     [SerializeField] private TimeManager Timer;
     [SerializeField] private PlayerController Player;
-    [SerializeField] private GameObject MovingParent;
+    [SerializeField] private GameObject PanelParent;
 
     [Header("UI Components")]
     [SerializeField] private Image Background;
     [SerializeField] private TextMeshProUGUI CoinsCollected;
-    [SerializeField] private TextMeshProUGUI Eighty3CoinsCollected;
     [SerializeField] private TextMeshProUGUI TimesHit;
     [Space]
     [SerializeField] private TextMeshProUGUI FinalTime;
 
     [Header("Animation Settings")]
-    [SerializeField] private float OpenTime = 1f;
-    [SerializeField] private AnimationCurve PanelAnimationCurve;
-    [SerializeField] private RectTransform OffSceenPosition;
-    [SerializeField] private RectTransform OnSceenPosition;
-    [SerializeField] private Color BackGroundWhite;
-    [SerializeField] private Color BackGroundGreyedOut;
-    [Space]
     [SerializeField] private float UITickRate = 0.08f;
     [SerializeField] private float UITickPause = 0.5f;
+
+    private Color StartingColor;
 
     private IEnumerator coroutine;
     private WaitForEndOfFrame waitForFrameEnd = new WaitForEndOfFrame();
@@ -39,8 +34,6 @@ public class GameCompletedCanvas : MonoBehaviour
     {
         Timer.StopTimer();
         Player.SetInMenus();
-        MovingParent.SetActive(true);
-        MovingParent.transform.position = OffSceenPosition.position;
 
         if (coroutine == null)
         {
@@ -52,24 +45,21 @@ public class GameCompletedCanvas : MonoBehaviour
     private IEnumerator GameCompletedSequence()
     {
         yield return new WaitForSeconds(UITickPause);
-        float currentOpenTime = 0;
 
-        while (currentOpenTime < OpenTime)
-        {
-            MovingParent.transform.position = Vector2.LerpUnclamped(OffSceenPosition.position, OnSceenPosition.position, PanelAnimationCurve.Evaluate(currentOpenTime / OpenTime));
-            Background.color = Color.Lerp(BackGroundWhite, BackGroundGreyedOut, PanelAnimationCurve.Evaluate(currentOpenTime / OpenTime));
-            yield return waitForFrameEnd;
-            currentOpenTime += Time.unscaledDeltaTime;
-        }
+        yield return CanvasCoverController.MoveOnScreen();
+        PanelParent.SetActive(true);
+        Timer.gameObject.SetActive(false);
+        yield return new WaitForSeconds(UITickPause);
+        yield return CanvasCoverController.MoveOffScreen();
 
-        MovingParent.transform.position = OnSceenPosition.position;
         yield return new WaitForSeconds(UITickPause);
 
         ButtonPressed = false;
         int currentTick = 0;
         float currentTickTime = 0;
+        int totalCoins = (Timer.Eighty3CoinsCollected * 3) + Timer.CoinsCollected;
 
-        while (currentTick != Timer.CoinsCollected && ButtonPressed == false)
+        while (currentTick != totalCoins && ButtonPressed == false)
         {
             while (currentTickTime < UITickRate && ButtonPressed == false)
             {
@@ -82,26 +72,8 @@ public class GameCompletedCanvas : MonoBehaviour
             currentTickTime = 0;
         }
 
-        yield return new WaitForSeconds(UITickPause);
-
-        ButtonPressed = false;
-        currentTick = 0;
-        currentTickTime = 0;
-
-        while (currentTick != Timer.Eighty3CoinsCollected * 3 && ButtonPressed == false)
-        {
-            while (currentTickTime < UITickRate && ButtonPressed == false)
-            {
-                currentTickTime += Time.deltaTime;
-                yield return null;
-            }
-
-            currentTick++;
-            Eighty3CoinsCollected.text = "-" + currentTick + "s";
-            currentTickTime = 0;
-        }
-
-        yield return new WaitForSeconds(UITickPause);
+        if (ButtonPressed == false)
+            yield return new WaitForSeconds(UITickPause);
 
         ButtonPressed = false;
         currentTick = 0;
@@ -120,7 +92,8 @@ public class GameCompletedCanvas : MonoBehaviour
             currentTickTime = 0;
         }
 
-        yield return new WaitForSeconds(UITickPause);
+        if (ButtonPressed == false)
+            yield return new WaitForSeconds(UITickPause);
 
         FinalTime.text = "Final Time: " + Timer.GetTime().ToString("0.0") + "s";
 
@@ -130,6 +103,9 @@ public class GameCompletedCanvas : MonoBehaviour
         {
             yield return null;
         }
+
+        yield return CanvasCoverController.MoveOnScreen();
+        yield return new WaitForSeconds(UITickPause);
 
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         coroutine = null;
