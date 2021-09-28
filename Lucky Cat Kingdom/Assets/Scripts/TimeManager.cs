@@ -28,6 +28,7 @@ public class TimeManager : MonoBehaviour
 
     private ParticleSystem.EmitParams EmitParams;
     private IEnumerator coroutine;
+    private Color StartingColor;
 
     private float currentTime = 0f;
     private bool timerRunning = false;
@@ -36,6 +37,10 @@ public class TimeManager : MonoBehaviour
     public int Eighty3CoinsCollected = 0;
     public int TimesDamaged = 0;
 
+    private void Start()
+    {
+        StartingColor = TimerDisplay.color;
+    }
 
     private void Update()
     {
@@ -123,7 +128,7 @@ public class TimeManager : MonoBehaviour
         yield return FlashColor(GreenLight);
 
         yield return FlashColor(Green);
-        yield return FlashColor(Color.black);
+        yield return FlashColor(StartingColor);
 
         coroutine = null;
     }
@@ -137,7 +142,7 @@ public class TimeManager : MonoBehaviour
         yield return FlashColor(Orange);
 
         yield return FlashColor(Red);
-        yield return FlashColor(Color.black);
+        yield return FlashColor(StartingColor);
 
         coroutine = null;
     }
