@@ -452,6 +452,12 @@ public class PlayerController : MonoBehaviour
         InMenus = true;
     }
 
+    public void SetOutMenus()
+    {
+        InMenus = false;
+        myAnimator.SetBool("IsSleeping", false);
+    }
+
     private bool CheckJoyStickConnected()
     {
         //Get Joystick Names

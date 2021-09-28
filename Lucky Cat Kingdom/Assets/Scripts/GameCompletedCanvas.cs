@@ -12,6 +12,7 @@ public class GameCompletedCanvas : MonoBehaviour
     [SerializeField] private TimeManager Timer;
     [SerializeField] private PlayerController Player;
     [SerializeField] private GameObject PanelParent;
+    [SerializeField] private GameObject TimerText;
 
     [Header("UI Components")]
     [SerializeField] private Image Background;
@@ -23,6 +24,8 @@ public class GameCompletedCanvas : MonoBehaviour
     [Header("Animation Settings")]
     [SerializeField] private float UITickRate = 0.08f;
     [SerializeField] private float UITickPause = 0.5f;
+    [Space]
+    [SerializeField] private float UIMaxTickTime = 3f;
 
     private Color StartingColor;
 
@@ -45,10 +48,12 @@ public class GameCompletedCanvas : MonoBehaviour
     private IEnumerator GameCompletedSequence()
     {
         yield return new WaitForSeconds(UITickPause);
+        yield return new WaitForSeconds(UITickPause);
+        yield return new WaitForSeconds(UITickPause);
 
         yield return CanvasCoverController.MoveOnScreen();
         PanelParent.SetActive(true);
-        Timer.gameObject.SetActive(false);
+        TimerText.SetActive(false);
         yield return new WaitForSeconds(UITickPause);
         yield return CanvasCoverController.MoveOffScreen();
 
@@ -95,7 +100,33 @@ public class GameCompletedCanvas : MonoBehaviour
         if (ButtonPressed == false)
             yield return new WaitForSeconds(UITickPause);
 
-        FinalTime.text = "Final Time: " + Timer.GetTime().ToString("0.0") + "s";
+        ButtonPressed = false;
+        currentTick = 0;
+        currentTickTime = 0;
+        int intTime = (int)Timer.GetTime();
+
+        if (intTime * UITickRate >= UIMaxTickTime)
+        {
+            UITickRate = UITickRate * 0.5f;
+        }
+
+        while (currentTick != intTime && ButtonPressed == false)
+        {
+            while (currentTickTime < UITickRate && ButtonPressed == false)
+            {
+                currentTickTime += Time.deltaTime;
+                yield return null;
+            }
+
+            currentTick++;
+            FinalTime.text = currentTick +"."+ Random.Range(0,9);
+            currentTickTime = 0;
+        }
+
+        FinalTime.text = Timer.GetTime().ToString("0.0");
+
+        if (ButtonPressed == false)
+            yield return new WaitForSeconds(UITickPause);
 
         ButtonPressed = false;
 
