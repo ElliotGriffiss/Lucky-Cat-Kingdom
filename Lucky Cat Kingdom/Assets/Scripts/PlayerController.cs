@@ -15,6 +15,8 @@ public class PlayerController : MonoBehaviour
     [Space]
     [SerializeField] private LayerMask m_groundLayerMask;
     [SerializeField] private LayerMask m_wallsLayerMask;
+    [Space]
+    [SerializeField] private bool IsMenuCat;
 
     [Header("Jump Settings")]
     [SerializeField] private float m_hangTime = 0.2f;
@@ -337,7 +339,11 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            Timer.StartTimer();
+            if (!IsMenuCat)
+            {
+                Timer.StartTimer();
+            }
+
             myAnimator.SetBool("IsIdle", false);
             IdleCounter = 0;
         }
