@@ -16,7 +16,6 @@ public class GameCompletedCanvas : MonoBehaviour
     [SerializeField] private GameObject TimerText;
 
     [Header("UI Components")]
-    [SerializeField] private Image Background;
     [SerializeField] private TextMeshProUGUI CoinsCollected;
     [SerializeField] private TextMeshProUGUI TimesHit;
     [Space]
