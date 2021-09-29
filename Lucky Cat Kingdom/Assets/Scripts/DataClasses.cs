@@ -16,4 +16,17 @@ namespace DataClasses
         Raven,
         Falling,
     }
+
+    [System.Serializable]
+    public class ScoreBoardData
+    {
+        public float Score;
+        public string Name;
+    }
+
+    [System.Serializable]
+    public class AllScoreBoardData
+    {
+        public List<ScoreBoardData> Data;
+    }
 }

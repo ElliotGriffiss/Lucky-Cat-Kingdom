@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
+using DataClasses;
 
 public class NameInputCanvas : MonoBehaviour
 {
@@ -16,15 +17,15 @@ public class NameInputCanvas : MonoBehaviour
     [Header("Animation Settings")]
     [SerializeField] private float UITickPause = 0.5f;
 
-    private float Time;
+    private float Score;
     private string Name;
 
     private IEnumerator coroutine;
 
     public void ShowNameInputCanvas(float time)
     {
-        Time = time;
-        TimeText.text = Time.ToString("0.0");
+        Score = time;
+        TimeText.text = Score.ToString("0.0");
 
         PanelParent.SetActive(true);
 
@@ -40,7 +41,7 @@ public class NameInputCanvas : MonoBehaviour
         yield return CanvasCoverController.MoveOffScreen();
         TMP_InputField.ActivateInputField();
 
-        while (!Input.GetKeyDown(KeyCode.Return) && String.IsNullOrEmpty(Name))
+        while (!Input.GetKeyDown(KeyCode.Return) || string.IsNullOrEmpty(Name))
         {
             yield return null;
         }
@@ -48,8 +49,21 @@ public class NameInputCanvas : MonoBehaviour
         // store string here
 
         yield return CanvasCoverController.MoveOnScreen();
+
+        ScoreBoardData scoreBoardData = new ScoreBoardData();
+
+        scoreBoardData.Score = Score;
+        scoreBoardData.Name = Name;
+
+        SaveDataManager.Instance.AddData(scoreBoardData);
+
         yield return new WaitForSeconds(UITickPause);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         coroutine = null;
+    }
+
+    public void OnNameEntered(String name)
+    {
+        Name = name;
     }
 }
