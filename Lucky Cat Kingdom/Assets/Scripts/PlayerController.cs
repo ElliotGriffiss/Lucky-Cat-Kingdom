@@ -197,6 +197,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
+            myRigidbody.velocity = new Vector2(0, myRigidbody.velocity.y);
             myAnimator.SetBool("IsRunning", false);
             DustEmissionModule.rateOverTime = 0;
         }

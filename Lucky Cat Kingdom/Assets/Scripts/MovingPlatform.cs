@@ -16,7 +16,7 @@ public class MovingPlatform : MonoBehaviour
     {
         if (Moving && Vector2.Distance(gameObject.transform.position, EndPos.position) > 0.1f)
         {
-            Rigidbody2D.MovePosition(gameObject.transform.position += Vector3.right * movementSpeed * Time.fixedDeltaTime);
+             Rigidbody2D.MovePosition(gameObject.transform.position += Vector3.right * movementSpeed * Time.fixedDeltaTime);
         }
         else if (!Moving && Vector2.Distance(gameObject.transform.position, StartPos.position) > 0.1f)
         {

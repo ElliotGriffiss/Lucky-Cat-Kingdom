@@ -2,12 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 using TMPro;
 
 public class GameCompletedCanvas : MonoBehaviour
 {
     [Header("Scene References")]
+    [SerializeField] private NameInputCanvas NameInputCanvas;
     [SerializeField] private CanvasCoverController CanvasCoverController;
     [SerializeField] private TimeManager Timer;
     [SerializeField] private PlayerController Player;
@@ -139,7 +139,8 @@ public class GameCompletedCanvas : MonoBehaviour
         yield return CanvasCoverController.MoveOnScreen();
         yield return new WaitForSeconds(UITickPause);
 
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        PanelParent.SetActive(false);
+        NameInputCanvas.ShowNameInputCanvas(Timer.GetTime());
         coroutine = null;
     }
 
