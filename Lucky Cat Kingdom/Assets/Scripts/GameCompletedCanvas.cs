@@ -78,8 +78,8 @@ public class GameCompletedCanvas : MonoBehaviour
             currentTickTime = 0;
         }
 
-        if (ButtonPressed == false)
-            yield return new WaitForSeconds(UITickPause);
+        CoinsCollected.text = "-" + totalCoins + "s";
+        yield return new WaitForSeconds(UITickPause);
 
         ButtonPressed = false;
         currentTick = 0;
@@ -98,8 +98,8 @@ public class GameCompletedCanvas : MonoBehaviour
             currentTickTime = 0;
         }
 
-        if (ButtonPressed == false)
-            yield return new WaitForSeconds(UITickPause);
+        TimesHit.text = "+" + Timer.TimesDamaged + "s";
+        yield return new WaitForSeconds(UITickPause);
 
         ButtonPressed = false;
         currentTick = 0;
@@ -125,9 +125,7 @@ public class GameCompletedCanvas : MonoBehaviour
         }
 
         FinalTime.text = Timer.GetTime().ToString("0.0");
-
-        if (ButtonPressed == false)
-            yield return new WaitForSeconds(UITickPause);
+        yield return new WaitForSeconds(UITickPause);
 
         ButtonPressed = false;
 
@@ -144,9 +142,9 @@ public class GameCompletedCanvas : MonoBehaviour
         coroutine = null;
     }
 
-    public void OnContinueButtonPressed()
+    public void Update()
     {
-        if (ButtonPressed != true)
+        if (Input.GetKeyDown(KeyCode.Return) || Input.GetAxis("Submit") == 1)
         {
             ButtonPressed = true;
         }

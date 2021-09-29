@@ -8,6 +8,7 @@ using DataClasses;
 
 public class NameInputCanvas : MonoBehaviour
 {
+    [Header("Scene References")]
     [SerializeField] private GameObject PanelParent;
     [SerializeField] private CanvasCoverController CanvasCoverController;
     [Space]
@@ -58,7 +59,7 @@ public class NameInputCanvas : MonoBehaviour
         SaveDataManager.Instance.AddData(scoreBoardData);
 
         yield return new WaitForSeconds(UITickPause);
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        SceneManager.LoadScene("MenuScene");
         coroutine = null;
     }
 
