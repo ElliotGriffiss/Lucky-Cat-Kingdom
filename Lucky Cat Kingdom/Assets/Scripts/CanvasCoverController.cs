@@ -20,6 +20,11 @@ public class CanvasCoverController : MonoBehaviour
 
     private WaitForEndOfFrame waitForFrameEnd = new WaitForEndOfFrame();
 
+    private void Start()
+    {
+
+    }
+
     public IEnumerator MoveOnScreen()
     {
         PanelParent.SetActive(true);
@@ -28,11 +33,11 @@ public class CanvasCoverController : MonoBehaviour
 
         while (currentOpenTime < OpenTime)
         {
-            LeftPanel.transform.position = Vector2.LerpUnclamped(LeftPanelOffSceenPosition.position, LeftPanelOnSceenPosition.position, PanelAnimationCurve.Evaluate(currentOpenTime / OpenTime));
-            RightPanel.transform.position = Vector2.LerpUnclamped(RightPanelOffSceenPosition.position, RightPanelOnSceenPosition.position, PanelAnimationCurve.Evaluate(currentOpenTime / OpenTime));
+            LeftPanel.transform.position = Vector2.Lerp(LeftPanelOffSceenPosition.position, LeftPanelOnSceenPosition.position, PanelAnimationCurve.Evaluate(currentOpenTime / OpenTime));
+            RightPanel.transform.position = Vector2.Lerp(RightPanelOffSceenPosition.position, RightPanelOnSceenPosition.position, PanelAnimationCurve.Evaluate(currentOpenTime / OpenTime));
 
             yield return waitForFrameEnd;
-            currentOpenTime += Time.unscaledDeltaTime;
+            currentOpenTime += Time.deltaTime;
         }
 
         LeftPanel.transform.position = LeftPanelOnSceenPosition.position;
@@ -45,11 +50,11 @@ public class CanvasCoverController : MonoBehaviour
 
         while (currentOpenTime < OpenTime)
         {
-            LeftPanel.transform.position = Vector2.LerpUnclamped(LeftPanelOnSceenPosition.position, LeftPanelOffSceenPosition.position, PanelAnimationCurve.Evaluate(currentOpenTime / OpenTime));
-            RightPanel.transform.position = Vector2.LerpUnclamped(RightPanelOnSceenPosition.position, RightPanelOffSceenPosition.position, PanelAnimationCurve.Evaluate(currentOpenTime / OpenTime));
+            LeftPanel.transform.position = Vector2.Lerp(LeftPanelOnSceenPosition.position, LeftPanelOffSceenPosition.position, PanelAnimationCurve.Evaluate(currentOpenTime / OpenTime));
+            RightPanel.transform.position = Vector2.Lerp(RightPanelOnSceenPosition.position, RightPanelOffSceenPosition.position, PanelAnimationCurve.Evaluate(currentOpenTime / OpenTime));
 
             yield return waitForFrameEnd;
-            currentOpenTime += Time.unscaledDeltaTime;
+            currentOpenTime += Time.deltaTime;
         }
 
         LeftPanel.transform.position = LeftPanelOffSceenPosition.position;

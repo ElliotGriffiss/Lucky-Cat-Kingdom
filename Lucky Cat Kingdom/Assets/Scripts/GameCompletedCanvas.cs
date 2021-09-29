@@ -12,6 +12,7 @@ public class GameCompletedCanvas : MonoBehaviour
     [SerializeField] private TimeManager Timer;
     [SerializeField] private PlayerController Player;
     [SerializeField] private GameObject PanelParent;
+    [SerializeField] private GameObject PanelBackground;
     [SerializeField] private GameObject TimerText;
 
     [Header("UI Components")]
@@ -54,6 +55,7 @@ public class GameCompletedCanvas : MonoBehaviour
         yield return CanvasCoverController.MoveOnScreen();
         PanelParent.SetActive(true);
         TimerText.SetActive(false);
+        PanelBackground.SetActive(true);
         yield return new WaitForSeconds(UITickPause);
         yield return CanvasCoverController.MoveOffScreen();
 
