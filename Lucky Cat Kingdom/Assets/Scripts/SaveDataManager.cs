@@ -19,8 +19,18 @@ public class SaveDataManager : MonoBehaviour
         {
             SaveDataManager.Instance = this;
             DontDestroyOnLoad(gameObject);
-            string json = System.IO.File.ReadAllText(Application.persistentDataPath + "/ScoreBoardData.json");
-            AllData = JsonUtility.FromJson<AllScoreBoardData>(json);
+
+            if (System.IO.File.Exists(Application.persistentDataPath + "/ScoreBoardData.json"))
+            {
+                string json = System.IO.File.ReadAllText(Application.persistentDataPath + "/ScoreBoardData.json");
+                AllData = JsonUtility.FromJson<AllScoreBoardData>(json);
+            }
+            else
+            {
+                AllData = new AllScoreBoardData();
+                AllData.Data = new List<ScoreBoardData>();
+            }
+
         }
     }
 
