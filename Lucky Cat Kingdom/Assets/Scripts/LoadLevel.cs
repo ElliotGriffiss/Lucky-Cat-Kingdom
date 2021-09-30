@@ -8,6 +8,7 @@ public class LoadLevel : MonoBehaviour
 {
     [Header("Scene References")]
     [SerializeField] private CanvasCoverController CanvasCoverController;
+    [SerializeField] private GameObject PanelParent;
 
     [Header("Animation Settings")]
     [SerializeField] private float UITickPause = 0.5f;
@@ -16,9 +17,9 @@ public class LoadLevel : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Return) || Input.GetAxis("Submit") == 1)
+        if (Input.GetAxis("Submit") == 1)
         {
-            if (coroutine == null)
+            if (coroutine == null && PanelParent.activeInHierarchy)
             {
                 coroutine = LoadLevelSequence();
                 StartCoroutine(coroutine);

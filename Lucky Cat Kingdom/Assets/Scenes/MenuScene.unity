@@ -13221,6 +13221,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CanvasCoverController: {fileID: 807690931}
+  PanelParent: {fileID: 570385852}
   UITickPause: 0.5
 --- !u!1 &1003240744
 GameObject:
