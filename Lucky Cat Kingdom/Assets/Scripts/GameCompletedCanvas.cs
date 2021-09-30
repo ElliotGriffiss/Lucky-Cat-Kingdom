@@ -144,7 +144,7 @@ public class GameCompletedCanvas : MonoBehaviour
 
     public void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Return) || Input.GetAxis("Submit") == 1)
+        if (Input.GetKeyDown(KeyCode.Return) || Input.GetAxis("Cancel") == 1)
         {
             ButtonPressed = true;
         }
