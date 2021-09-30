@@ -126,9 +126,6 @@ public class PlayerController : MonoBehaviour
         }
 
         currentJoyStickConnectedCheck += Time.deltaTime;
-
-        if (Input.anyKeyDown)
-            Debug.Log(Input.inputString);
     }
 
     private void FixedUpdate()
