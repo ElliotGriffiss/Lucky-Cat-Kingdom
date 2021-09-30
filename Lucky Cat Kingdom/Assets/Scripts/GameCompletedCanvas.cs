@@ -14,6 +14,9 @@ public class GameCompletedCanvas : MonoBehaviour
     [SerializeField] private GameObject PanelParent;
     [SerializeField] private GameObject PanelBackground;
     [SerializeField] private GameObject TimerText;
+    [Space]
+    [SerializeField] private GameObject SkipIndicator;
+    [SerializeField] private GameObject ContinueIndicator;
 
     [Header("UI Components")]
     [SerializeField] private TextMeshProUGUI CoinsCollected;
@@ -55,6 +58,7 @@ public class GameCompletedCanvas : MonoBehaviour
         PanelParent.SetActive(true);
         TimerText.SetActive(false);
         PanelBackground.SetActive(true);
+        SkipIndicator.SetActive(true);
         yield return new WaitForSeconds(UITickPause);
         yield return CanvasCoverController.MoveOffScreen();
 
@@ -128,6 +132,8 @@ public class GameCompletedCanvas : MonoBehaviour
         yield return new WaitForSeconds(UITickPause);
 
         ButtonPressed = false;
+        SkipIndicator.SetActive(false);
+        ContinueIndicator.SetActive(true);
 
         while (ButtonPressed == false)
         {
@@ -147,6 +153,7 @@ public class GameCompletedCanvas : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Return) || Input.GetAxis("Cancel") == 1)
         {
             ButtonPressed = true;
+            SkipIndicator.SetActive(false);
         }
     }
 }

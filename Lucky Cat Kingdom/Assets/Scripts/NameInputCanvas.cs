@@ -14,6 +14,7 @@ public class NameInputCanvas : MonoBehaviour
     [Space]
     [SerializeField] private TMP_InputField TMP_InputField;
     [SerializeField] private TextMeshProUGUI TimeText;
+    [SerializeField] private GameObject CallToActionIndicator;
 
     [Header("Animation Settings")]
     [SerializeField] private float UITickPause = 0.5f;
@@ -40,11 +41,16 @@ public class NameInputCanvas : MonoBehaviour
     private IEnumerator NameInputCanvasSequence()
     {
         yield return CanvasCoverController.MoveOffScreen();
-        TMP_InputField.ActivateInputField();
 
         while (!Input.GetKeyDown(KeyCode.Return) || string.IsNullOrEmpty(Name))
         {
+            TMP_InputField.ActivateInputField();
             yield return null;
+
+            if (!string.IsNullOrEmpty(Name))
+            {
+                CallToActionIndicator.SetActive(true);
+            }
         }
 
         // store string here
