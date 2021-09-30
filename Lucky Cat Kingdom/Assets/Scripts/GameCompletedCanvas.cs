@@ -88,6 +88,7 @@ public class GameCompletedCanvas : MonoBehaviour
         ButtonPressed = false;
         currentTick = 0;
         currentTickTime = 0;
+        SkipIndicator.SetActive(true);
 
         while (currentTick != Timer.TimesDamaged && ButtonPressed == false)
         {
@@ -109,6 +110,7 @@ public class GameCompletedCanvas : MonoBehaviour
         currentTick = 0;
         currentTickTime = 0;
         int intTime = (int)Timer.GetTime();
+        SkipIndicator.SetActive(true);
 
         if (intTime * UITickRate >= UIMaxTickTime)
         {
