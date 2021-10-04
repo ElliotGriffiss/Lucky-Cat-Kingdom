@@ -64,6 +64,7 @@ public class PlayerController : MonoBehaviour
     // Current Character Information
     private bool Grounded = false;
     private bool GroundedLastFrame = false;
+    private bool CollidingWithWall = false;
     private bool JumpRequest = false;
     private bool JumpHeld = false;
     private bool JumpBufferUsed = false;
@@ -96,7 +97,7 @@ public class PlayerController : MonoBehaviour
         playerColliderOffset = myCollider.offset;
 
         CollisionSizeJump = new Vector2(myCollider.size.x - m_groundDetectionPadding, m_groundDetectionPadding);
-        CollisionsSizeWall = new Vector2(m_wallDetectionPadding, myCollider.size.y - m_wallDetectionPadding);
+        CollisionsSizeWall = new Vector2(m_wallDetectionPadding, myCollider.size.y);
 
         DustEmissionModule = FootstepParticles.emission;
     }
@@ -169,10 +170,10 @@ public class PlayerController : MonoBehaviour
             Vector2 boxCenter = (Vector2)transform.position + direction * (playerSize.x) * 0.5f;
             boxCenter += playerColliderOffset;
 
-            bool collidingWithWall = Physics2D.OverlapBox(boxCenter, CollisionsSizeWall, 0, m_wallsLayerMask);
-            DebugCollision(boxCenter, CollisionsSizeWall, !collidingWithWall);
+            CollidingWithWall = Physics2D.OverlapBox(boxCenter, CollisionsSizeWall, 0, m_wallsLayerMask);
+            DebugCollision(boxCenter, CollisionsSizeWall, !CollidingWithWall);
 
-            if (!collidingWithWall)
+            if (!CollidingWithWall)
             {
                 Vector2 playerVelocity = new Vector2(HorizontalMovement * m_speed, myRigidbody.velocity.y);
                 myRigidbody.velocity = playerVelocity;
