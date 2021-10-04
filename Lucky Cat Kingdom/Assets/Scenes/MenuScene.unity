@@ -12415,7 +12415,6 @@ MonoBehaviour:
   ForceModifier: 1
   DamageUplift: 16
   DamageTime: 0.5
-  FlashEffectSpeed: 0
   myRenderer: {fileID: 1575683775}
   myRigidbody: {fileID: 746668389}
   myAnimator: {fileID: 1575683773}

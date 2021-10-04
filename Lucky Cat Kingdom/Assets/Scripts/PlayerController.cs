@@ -39,7 +39,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float ForceModifier = 1f;
     [SerializeField] private float DamageUplift;
     [SerializeField] private float DamageTime = 0.5f;
-    [SerializeField] private float FlashEffectSpeed;
     private IEnumerator coroutine;
     private bool PlayerHasControl = true;
     private bool InMenus = false;
